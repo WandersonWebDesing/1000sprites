@@ -1,0 +1,69 @@
+<html>
+<head>
+<meta charset="windows-1252">
+<title>Protótipo de Tecnologia</title>
+<!-- Inclui o arquivo do game engine Phaser -->
+<script type="text/javascript" src="phaser.js"></script>
+</head>
+<body>
+<h1>Protótipo de Tecnologia</h1>
+<p>Testando o desempenho do Phaser com 1000 sprites na tela.</p>
+<script type = "text/javascript">
+/* Normalmente, seria mais organizado e recomendável manter os scripts em arquivos
+   separados. No entanto, para esse pequeno protótipo vamos incluir todo o código 
+   no próprio arquivo HTML.
+*/
+// Esse método é executado assim que a página for carregada.
+window.onload = function() {
+  // Cria o objeto que representa o nosso jogo.
+  // Como vamos usar o sistema de "debug", é preciso forçar o uso de um "canvas" (terceiro parâmetro).
+  var game = new Phaser.Game(640, 480, Phaser.CANVAS);
+  // Adiciona um estado de jogo (isso será estudado na aula 10).
+  game.state.add("Main", MainState);
+  // Inicia a execução do estado.
+  game.state.start("Main");
+}
+
+// Cria a definição do nosso estado de jogo.
+MainState = function(game) { }
+MainState.prototype = {
+  // O método preload é usado no início do estado, para pré-carregar imagens e outros recursos
+  // que serão usados naquele estado.
+  preload: function() { 
+    // Carrega a imagem "circulo.png" que será identificada pelo nome "circulo".
+    this.load.image("circulo", "circulo.png");
+  }
+  ,
+  // O método create é chamado depois de preload, quando o estado vai ser iniciado.
+  // Assim, instruções de inicialização do estado devem ser colocadas aqui.
+  create: function() {
+    var i, s, r;
+    r = this.game.rnd;
+    // Cria 1000 sprites usando a imagem do círculo, com movimentos aleatórios.
+    for (i = 0; i < 1000; i++) {
+      s = this.add.sprite(r.integerInRange(0, 576), r.integerInRange(0, 416), "circulo");
+      // Utilizamos o sistema de física do Phaser para dar movimento aos objetos.
+      // Primeiro, indicamos que eles devem rebater nos cantos da tela.
+      s.body.collideWorldBounds = true;
+      // Depois, damos uma velocidade aleatória para cada um.
+      s.body.velocity.x = 10*r.integerInRange(-5, 5);
+      s.body.velocity.y = 10*r.integerInRange(-5, 5);
+      // E por fim, definimos o coeficiente de restituição como 1. Isso significa que
+      // eles vão continuar rebatendo sem perder velocidade.
+      s.body.bounce.setTo(1, 1);
+    }
+    // Por fim, iniciamos o sistema de "debug" para apresentar informações do jogo.
+    this.game.debug.start(0, 0, "#00ff00");
+  }
+  ,
+  // O método render é usado para executar instruções adicionais de desenho no jogo. 
+  render: function() { 
+    // Nesse caso, escrevemos no canto superior esquerdo o número de quadros por segundo (FPS)
+    // que o game engine está conseguindo executar.
+    this.game.debug.line(this.game.time.fps, 20, 20);
+  }
+}
+</script>
+</body>
+</html>
+
